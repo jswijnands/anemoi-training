@@ -1,3 +1,4 @@
+# this is the CERRA config for anemoi-training with the stretched grid
 defaults:
  - data: zarr
  - dataloader: native_grid
@@ -7,7 +8,7 @@ defaults:
  - model: graphtransformer
  - training: default
  - _self_
-
+ 
 diagnostics:
   log:
     mlflow:
