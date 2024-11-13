@@ -2,7 +2,7 @@
 defaults:
  - data: zarr
  - dataloader: native_grid
- - diagnostics: eval_rollout
+ - diagnostics: evaluation
  - hardware: slurm
  - graph: stretched_grid
  - model: graphtransformer
@@ -67,8 +67,8 @@ dataloader:
     end: "2008-06-29"
 
   limit_batches:
-    training: 100
-    validation: 100
+    training: 10
+    validation: 10
 
 hardware:
   num_gpus_per_model: 4
@@ -101,6 +101,8 @@ data:
   - tp
   normalizer:
     default: "mean-std"
+    std:
+    - "tp"
     min-max:
     max:
     none:
@@ -139,3 +141,17 @@ training:
     rate: 5e-4  #8 * 0.625e-4
     min: 2.4e-6 #8 * 3e-7
     iterations: 150000
+  
+  validation_metrics:
+    # loss class to initialise
+    - _target_: anemoi.training.losses.mse.WeightedMSELoss
+      # Scalars to include in loss calculation
+      # Available scalars include, 'variable'
+      scalars: []
+      # other kwargs
+      ignore_nans: True
+    - _target_: anemoi.training.losses.limitedarea.WeightedMSELossLimitedArea
+      scalars: ['only_regional']
+      inside_lam: True
+      wmse_contribution: False
+      ignore_nans: True
