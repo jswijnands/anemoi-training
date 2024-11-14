@@ -60,7 +60,6 @@ class WeightedMSELossLimitedArea(BaseWeightedLoss):
 
         self.inside_lam = inside_lam
         self.wmse_contribution = wmse_contribution
-        self.register_buffer("mask", mask, persistent=True)
 
     def forward(
         self,
