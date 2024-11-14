@@ -31,7 +31,6 @@ class WeightedMSELossLimitedArea(BaseWeightedLoss):
     def __init__(
         self,
         node_weights: torch.Tensor,
-        mask: torch.Tensor,
         inside_lam: bool = True,
         wmse_contribution: bool = False,
         ignore_nans: bool = False,
