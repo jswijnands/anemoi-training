@@ -94,10 +94,8 @@ class WeightedMSELossLimitedArea(BaseWeightedLoss):
 
         if not self.wmse_contribution:
             if self.inside_lam:
-                #self.node_weights *= self.mask.................
                 self.node_weights *= self.scalar.subset('only_regional')
             else:
-                #self.node_weights *= ~self.mask.................
                 self.node_weights *= self.scalar.subset('without_regional')
 
         if feature_scale:
