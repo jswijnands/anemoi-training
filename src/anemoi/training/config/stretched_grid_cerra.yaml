@@ -151,7 +151,7 @@ training:
       # other kwargs
       ignore_nans: True
     - _target_: anemoi.training.losses.limitedarea.WeightedMSELossLimitedArea
-      scalars: ['only_regional']
+      scalars: ['limited_area_mask']
       inside_lam: True
       wmse_contribution: False
       ignore_nans: True

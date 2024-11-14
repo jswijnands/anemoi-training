@@ -65,8 +65,7 @@ class WeightedMSELossLimitedArea(BaseWeightedLoss):
         pred: torch.Tensor,
         target: torch.Tensor,
         squash: bool = True,
-        feature_indices: torch.Tensor | None = None,
-        feature_scale: bool = True,
+        scalar_indices: torch.Tensor | None = None,
     ) -> torch.Tensor:
         """Calculates the lat-weighted MSE loss.
 
@@ -78,10 +77,8 @@ class WeightedMSELossLimitedArea(BaseWeightedLoss):
             Target tensor, shape (bs, ensemble, lat*lon, n_outputs)
         squash : bool, optional
             Average last dimension, by default True
-        feature_indices:
+        scalar_indices:
             feature indices (relative to full model output) of the features passed in pred and target
-        feature_scale:
-            If True, scale the loss by the feature_weights
 
         Returns
         -------
@@ -90,13 +87,15 @@ class WeightedMSELossLimitedArea(BaseWeightedLoss):
         """
         out = torch.square(pred - target)
 
-        if not self.wmse_contribution:
-            if self.inside_lam:
-                self.node_weights *= self.scalar.subset('only_regional')
-            else:
-                self.node_weights *= self.scalar.subset('without_regional')
+        limited_area_mask = self.scalar.subset('limited_area_mask').get_scalar(out.ndim)
+        if not self.inside_lam:
+            limited_area_mask = ~limited_area_mask
 
-        if feature_scale:
-            out = self.scale(out, feature_indices)
+        if not self.wmse_contribution:
+            self.node_weights *= limited_area_mask
+
+        out *= limited_area_mask 
+
+        out = self.scale(out, scalar_indices, without_scalars = ['limited_area_mask'])
 
         return self.scale_by_node_weights(out, squash)
